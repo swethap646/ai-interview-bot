@@ -33,5 +33,5 @@ npm run dev             # runs at http://localhost:3000
 |-------|------|
 | Frontend | Angular 21, TypeScript |
 | Backend | Node.js, Express |
-| AI (planned) | Google Gemini / OpenAI |
-| Storage (planned) | Local → Cloud (S3/GCS) |
+| AI | Groq (Llama 3.3-70b) |
+| Storage | Local → MongoDB Atlas |

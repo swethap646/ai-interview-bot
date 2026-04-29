@@ -1,0 +1,101 @@
+<div class="topic-page">
+
+  <!-- Background Orbs -->
+  <div class="bg-orb orb-1"></div>
+  <div class="bg-orb orb-2"></div>
+
+  <!-- Header -->
+  <header class="page-header glass-card">
+    <div class="logo">
+      <span class="logo-icon">🤖</span>
+      <span class="logo-text">AI Interview Configuration</span>
+    </div>
+  </header>
+
+  <main class="page-content">
+    <div class="config-container">
+      
+      <!-- 1. DOMAIN -->
+      <section class="config-section">
+        <h3 class="section-title">1. Select Domain</h3>
+        <div class="btn-group">
+          <button 
+            *ngFor="let domain of domains"
+            class="toggle-btn glass-card"
+            [class.active]="selectedDomain?.id === domain.id"
+            (click)="selectDomain(domain)">
+            <span class="btn-icon">{{ domain.icon }}</span>
+            <span class="btn-label">{{ domain.label }}</span>
+          </button>
+        </div>
+      </section>
+
+      <!-- 2. TOPIC (Appears when Domain selected) -->
+      <section class="config-section" *ngIf="selectedDomain">
+        <h3 class="section-title">2. Select Topic</h3>
+        
+        <div class="topic-group-block" *ngFor="let group of selectedDomain.groups">
+          <h4 class="topic-group-title">{{ group.name }}</h4>
+          <div class="topic-square-grid">
+            <button 
+              *ngFor="let sub of group.items"
+              class="topic-square-card glass-card"
+              [class.active]="selectedSubtopic?.id === sub.id"
+              [style.--icon-color]="sub.iconColor"
+              (click)="selectSubtopic(sub)">
+              <span class="topic-icon-container" [innerHTML]="sub.safeIcon"></span>
+              <span class="topic-square-label">{{ sub.label }}</span>
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- 3. MODE -->
+      <section class="config-section">
+        <h3 class="section-title">3. Select Interview Mode</h3>
+        <div class="mode-card-grid">
+          <button 
+            *ngFor="let mode of modes"
+            class="mode-small-card glass-card"
+            [class.active]="selectedMode?.id === mode.id"
+            (click)="selectMode(mode)">
+            <div class="mode-badge-pill">{{ mode.badge }}</div>
+            <div class="mode-icon">{{ mode.icon }}</div>
+            <div class="mode-label">{{ mode.label }}</div>
+          </button>
+        </div>
+      </section>
+
+      <!-- 4. DURATION -->
+      <section class="config-section">
+        <h3 class="section-title">4. Select Duration</h3>
+        <div class="btn-group time-btn-group">
+          <button 
+            *ngFor="let time of times"
+            class="time-btn"
+            [class.active]="selectedTime === time"
+            (click)="selectTime(time)">
+            {{ time }} min
+          </button>
+        </div>
+      </section>
+
+      <!-- START BUTTON -->
+      <div class="action-footer">
+        <button 
+          class="btn-start" 
+          [disabled]="!isFormValid"
+          (click)="startInterview()">
+          Start Interview
+          <svg viewBox="0 0 24 24" fill="none" class="start-icon" stroke="currentColor" stroke-width="2.5"><path d="m9 18 6-6-6-6"/></svg>
+        </button>
+      </div>
+
+    </div>
+  </main>
+
+  <footer class="page-footer">
+    <p>&copy; 2026 AI Interview Bot &mdash; Empowering your career journey.</p>
+  </footer>
+
+</div>

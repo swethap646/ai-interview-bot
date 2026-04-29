@@ -1,0 +1,145 @@
+:host {
+  display: block;
+  min-height: 100vh;
+  background-image: linear-gradient(rgba(11, 17, 32, 0.85), rgba(11, 17, 32, 0.85)), url('/defocused-wooden-conference-table.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+}
+
+
+
+.landing-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 60px;
+}
+
+/* Selection Section */
+.selection-container {
+  padding: 60px 0;
+  min-height: 70vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.badge {
+  display: inline-block;
+  padding: 6px 16px;
+  background: rgba(0, 210, 255, 0.1);
+  color: var(--primary);
+  border-radius: 50px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  margin-bottom: 24px;
+  border: 1px solid rgba(0, 210, 255, 0.2);
+}
+
+.selection-title {
+  font-size: 2.8rem;
+  margin-bottom: 16px;
+  line-height: 1.2;
+}
+
+.gradient-text {
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.selection-subtitle {
+  font-size: 1rem;
+  color: var(--text-muted);
+  margin-bottom: 60px;
+  max-width: 600px;
+}
+
+/* Selection Grid */
+.selection-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+  gap: 40px;
+  width: 100%;
+  max-width: 1000px;
+}
+
+.selection-card {
+  padding: 50px 40px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: default;
+}
+
+.selection-card:hover {
+  transform: translateY(-12px) scale(1.02);
+  border-color: var(--primary);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+}
+
+.card-icon {
+  width: 64px;
+  height: 64px;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--primary);
+  filter: drop-shadow(0 0 15px var(--accent-glow));
+}
+
+.card-icon svg {
+  width: 100%;
+  height: 100%;
+}
+
+.card-title {
+  font-size: 1.5rem;
+  margin: 0;
+}
+
+.card-description {
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  line-height: 1.6;
+  margin-bottom: 20px;
+  min-height: 80px;
+}
+
+.card-actions {
+  width: 100%;
+}
+
+.card-actions .btn-primary {
+  width: 100%;
+}
+
+/* Footer Section */
+.footer {
+  padding: 40px 0;
+  text-align: center;
+  border-top: 1px solid var(--glass-border);
+  color: var(--text-muted);
+  font-size: 0.9rem;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .selection-title {
+    font-size: 2.5rem;
+  }
+  
+  .selection-grid {
+    grid-template-columns: 1fr;
+  }
+}

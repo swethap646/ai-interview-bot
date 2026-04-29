@@ -1,0 +1,81 @@
+<div class="landing-container">
+  <!-- Loading Overlay -->
+  <div class="loading-overlay" *ngIf="isUploading">
+    <div class="loader-content">
+      <div class="spinner"></div>
+      <h2>Analyzing Resume</h2>
+      <p>Our AI is extracting skills and generating tailored questions for you...</p>
+    </div>
+  </div>
+
+  <!-- Selection Section -->
+  <main class="selection-container" [class.blur]="isUploading">
+    <header class="selection-header">
+      <div class="badge">Step 2: Setup Interview</div>
+      <h1 class="selection-title">Upload & <span class="gradient-text">Prepare</span></h1>
+      <p class="selection-subtitle">Provide your resume and prepare for your professional video interview.</p>
+    </header>
+
+    <!-- Error Message -->
+    <div class="error-banner" *ngIf="error">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+      </svg>
+      {{ error }}
+    </div>
+
+    <!-- Upload & Options Section -->
+    <div class="options-section">
+      <!-- Upload Dropzone -->
+      <label class="upload-dropzone glass-card" [class.file-selected]="selectedFile">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/>
+          <path d="M14 2v4a2 2 0 0 0 2 2h4"/>
+          <path d="m9 15 3-3 3 3"/>
+          <path d="M12 18v-6"/>
+        </svg>
+        <h3 *ngIf="!selectedFile">Upload your Resume</h3>
+        <h3 *ngIf="selectedFile" class="gradient-text">Resume Selected</h3>
+        <p *ngIf="!selectedFile">Drag and drop your PDF here, or click to browse</p>
+        <p *ngIf="selectedFile">{{ selectedFile.name }} ({{ (selectedFile.size / 1024).toFixed(1) }} KB)</p>
+        <input type="file" accept=".pdf" class="file-input" (change)="onFileSelected($event)" />
+      </label>
+
+      <!-- Time Selection -->
+      <div class="time-selection-container glass-card">
+        <label for="timeSelect" class="time-label">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"/>
+            <polyline points="12 6 12 12 16 14"/>
+          </svg>
+          Interview Duration
+        </label>
+        <div class="time-chips">
+          <button class="time-chip" [class.active]="selectedTime === '5'" (click)="selectTime('5')">5m</button>
+          <button class="time-chip" [class.active]="selectedTime === '10'" (click)="selectTime('10')">10m</button>
+          <button class="time-chip" [class.active]="selectedTime === '15'" (click)="selectTime('15')">15m</button>
+          <button class="time-chip" [class.active]="selectedTime === '25'" (click)="selectTime('25')">25m</button>
+          <button class="time-chip" [class.active]="selectedTime === '30'" (click)="selectTime('30')">30m</button>
+        </div>
+      </div>
+      
+    </div>
+
+    <!-- Start Action Grids -->
+    <div class="selection-grid single-mode" style="margin-top: 2rem;">
+      <div class="selection-card glass-card clickable-card featured-card" (click)="startResumeInterview('video')">
+        <div class="card-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect width="20" height="14" x="2" y="4" rx="2"/>
+            <circle cx="12" cy="10" r="3"/>
+            <path d="M7 22h10"/>
+            <path d="M12 22v-4"/>
+          </svg>
+        </div>
+        <h2 class="card-title">Start Video Interview</h2>
+        <p class="card-description">The complete face-to-face experience. Our AI will analyze your resume and conduct a professional video-based technical assessment.</p>
+        <div class="start-hint">Click here to begin once resume is uploaded</div>
+      </div>
+    </div>
+  </main>
+</div>

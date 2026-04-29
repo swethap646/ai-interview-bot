@@ -1,0 +1,220 @@
+<div class="interview-layout">
+  <!-- Header -->
+  <header class="interview-header glass-card">
+    <div class="header-left">
+      <div class="live-indicator">
+        <span class="dot"></span> Live Session
+      </div>
+      
+      <!-- Countdown Timer -->
+      <div class="timer-display" [class.timer-warning]="isTimeLow">
+        <span class="timer-icon">🕒</span>
+        <span class="timer-value">{{ timerDisplay }}</span>
+      </div>
+
+      <h2>HireReady AI Interview</h2>
+      <div class="interview-meta" *ngIf="interviewTopic !== 'general'">
+        <span class="meta-pill">{{ interviewTopic | titlecase }}</span>
+        <span class="meta-pill mode-pill">{{ interviewMode | titlecase }} Mode</span>
+        <span class="meta-pill time-pill" *ngIf="interviewTime">{{ interviewTime }} Min</span>
+      </div>
+    </div>
+    <div class="header-right">
+      <button class="btn-danger" (click)="endInterview()">End Interview</button>
+    </div>
+  </header>
+
+  <!-- Main Split Screen (Standard Modes) -->
+  <div class="split-container" *ngIf="interviewMode !== 'chat'">
+    <!-- Left panel: Question -->
+    <div class="question-panel glass-card">
+      <!-- ... existing question panel content ... -->
+      <div class="question-header">
+        <span class="question-pill" *ngIf="!isLoading && questions.length > 0">
+          Question {{ currentQuestionIndex + 1 }} of {{ totalQuestions }}
+        </span>
+        <span class="question-pill loading-pill" *ngIf="isLoading">
+          Generating Interview...
+        </span>
+      </div>
+
+      <div class="question-body">
+        <div class="loading-container" *ngIf="isLoading">
+          <div class="spinner"></div>
+          <p>AI is generating custom questions for <br><strong>{{ interviewTopic | titlecase }}</strong>...</p>
+        </div>
+
+        <div class="error-container" *ngIf="error && !isLoading">
+          <p class="error-text">{{ error }}</p>
+          <button class="btn-outline btn-sm" (click)="fetchQuestions(interviewTopic)">Retry</button>
+        </div>
+
+        <h3 class="question-text" *ngIf="!isLoading && questions.length > 0">
+          {{ questions[currentQuestionIndex] }}
+        </h3>
+      </div>
+
+      <div class="question-controls" *ngIf="!isLoading && questions.length > 0">
+        <button class="btn-outline" (click)="prevQuestion()" [disabled]="currentQuestionIndex === 0 || isChatLoading">
+          <svg viewBox="0 0 24 24" fill="none" class="icon" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+          Previous
+        </button>
+        <button class="btn-primary" (click)="nextQuestion()" [disabled]="isChatLoading">
+          {{ currentQuestionIndex === questions.length - 1 ? 'Submit & Finish' : 'Next Question' }}
+          <svg viewBox="0 0 24 24" fill="none" class="icon" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- Right panel: Media (Camera or Avatar) -->
+    <div class="media-panel">
+      <!-- Video Mode -->
+      <div class="camera-panel" *ngIf="interviewMode === 'video'">
+        <div class="video-container">
+          <video #videoElement playsinline [muted]="true"></video>
+          <div class="video-overlay" *ngIf="!stream">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="camera-off-icon" stroke-linecap="round" stroke-linejoin="round"><path d="m2 2 20 20"/><path d="M15 15l-4-4"/><path d="M23 7l-7 5 7 5V7z"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>
+            <p>Requesting camera access...</p>
+          </div>
+          <div class="recording-badge" *ngIf="isRecording">
+            <span class="pulse-dot"></span> REC
+          </div>
+          <div class="uploading-badge" *ngIf="isUploading">
+            <div class="mini-spinner"></div> Saving...
+          </div>
+        </div>
+
+        <!-- Live Transcript Overlay for Video -->
+        <div class="live-transcript glass-card" *ngIf="liveTranscript">
+          <span class="transcript-label">Transcribing...</span>
+          <p>{{ liveTranscript }}</p>
+        </div>
+
+        <div class="camera-controls">
+          <button class="btn-record" [class.recording]="isRecording" (click)="toggleRecording()">
+            <span class="record-icon"></span>
+            {{ isRecording ? 'Stop Recording' : 'Start Recording' }}
+          </button>
+        </div>
+      </div>
+
+      <!-- Audio Mode: Talking Avatar -->
+      <div class="avatar-panel glass-card" *ngIf="interviewMode === 'audio'">
+        <div class="avatar-container">
+          <div class="neural-halo" [class.speaking]="isSpeaking">
+            <div class="halo-ring ring-1"></div>
+            <div class="halo-ring ring-2"></div>
+            <div class="halo-ring ring-3"></div>
+            <div class="core-avatar">
+              <span class="ai-icon" *ngIf="!isSpeaking">🎙️</span>
+              <span class="ai-icon speaking-icon" *ngIf="isSpeaking">🔊</span>
+            </div>
+          </div>
+          <p class="avatar-status">AI Technical Facilitator</p>
+          <p class="avatar-subtext">Optimizing for Audio Clarity</p>
+
+          <div class="upload-status" *ngIf="isUploading">
+            <div class="mini-spinner"></div> Saving Audio...
+          </div>
+          
+          <!-- Live Transcript for Audio -->
+          <div class="live-transcript-audio" *ngIf="liveTranscript">
+            <div class="waveform-indicator">
+              <span></span><span></span><span></span><span></span><span></span>
+            </div>
+            <p>{{ liveTranscript }}</p>
+          </div>
+        </div>
+
+        <div class="audio-controls">
+          <button class="btn-outline btn-replay" (click)="speakQuestion()" [disabled]="isLoading">
+            <svg viewBox="0 0 24 24" fill="none" class="icon" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12a10 10 0 1 0 10-10 10 10 0 0 0-7.07 2.93L2 8"/><path d="M2 3v5h5"/></svg>
+            Re-play Audio
+          </button>
+          <button class="btn-record audio-btn" [class.recording]="isRecording" (click)="toggleRecording()">
+            <span class="record-icon"></span>
+            {{ isRecording ? 'Recording Audio' : 'Start Mic Recording' }}
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Chat Interface (Chat Mode) -->
+  <div class="chat-interview-container" *ngIf="interviewMode === 'chat'">
+    <div class="chat-main glass-card">
+      <div class="chat-messages" #chatScrollContainer>
+        <div *ngFor="let msg of chatMessages" 
+             [class]="'message-wrapper ' + (msg.role === 'assistant' ? 'ai-wrapper' : 'user-wrapper')">
+          <!-- Only show assistant bubble if it has content OR if it's the latest one and we're loading -->
+          <div class="message-bubble" 
+               *ngIf="msg.content || msg.role === 'user'"
+               [class.ai-bubble]="msg.role === 'assistant'" 
+               [class.user-bubble]="msg.role === 'user'">
+            <div class="avatar" *ngIf="msg.role === 'assistant'">🤖</div>
+            <div class="message-content">{{ msg.content }}</div>
+          </div>
+        </div>
+        
+        <!-- Typing Indicator -->
+        <div class="message-wrapper ai-wrapper" *ngIf="isChatLoading">
+          <div class="message-bubble ai-bubble typing-bubble">
+            <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+          </div>
+        </div>
+      </div>
+
+      <div class="chat-input-area">
+        <div class="input-container">
+          <input 
+            type="text" 
+            [(ngModel)]="userChatMessage" 
+            (keyup.enter)="sendChatMessage()"
+            placeholder="Type your response here..."
+            [disabled]="isChatLoading"
+          >
+          <button class="btn-send" (click)="sendChatMessage()" [disabled]="!userChatMessage.trim() || isChatLoading">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Sidebar for Chat Mode -->
+    <div class="chat-sidebar">
+      <div class="stats-card glass-card">
+        <h3>Interview Status</h3>
+        <div class="stat-item">
+          <span class="label">Topic:</span>
+          <span class="value">{{ interviewTopic | titlecase }}</span>
+        </div>
+        <div class="stat-item">
+          <span class="label">Status:</span>
+          <span class="value active">In Progress</span>
+        </div>
+        <div class="stat-item">
+          <span class="label">Messages:</span>
+          <span class="value">{{ chatMessages.length }}</span>
+        </div>
+      </div>
+      
+      <div class="tips-card glass-card">
+        <h3>Interview Tips 💡</h3>
+        <ul>
+          <li>Be concise but thorough.</li>
+          <li>Mention specific technologies.</li>
+          <li>Ask for clarification if needed.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- Evaluation Overlay -->
+  <div class="loading-overlay" *ngIf="isEvaluating">
+    <div class="glass-loader">
+      <div class="spinner"></div>
+      <h2>Saving & Evaluating...</h2>
+      <p>Please wait while our AI analyzes your performance and generates your report.</p>
+    </div>
+  </div>
+</div>

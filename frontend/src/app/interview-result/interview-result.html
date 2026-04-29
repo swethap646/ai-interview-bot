@@ -1,0 +1,125 @@
+<div class="result-container">
+  <!-- Loading State -->
+  <div class="loading-overlay" *ngIf="isLoading">
+    <div class="glass-loader">
+      <div class="spinner"></div>
+      <h2>Generating Evaluation...</h2>
+      <p>Our AI is analyzing your answers to provide a technical evaluation.</p>
+    </div>
+  </div>
+
+  <!-- Error State -->
+  <div class="error-view fade-in" *ngIf="error && !isLoading">
+    <div class="glass-card error-card">
+      <i class="error-icon">⚠️</i>
+      <h2>Oops!</h2>
+      <p>{{ error }}</p>
+      <button class="btn-primary" routerLink="/topic-select">Restart Interview</button>
+    </div>
+  </div>
+
+  <!-- Main Result View -->
+  <div class="content-wrapper" *ngIf="!isLoading && !error && interviewData">
+    <header class="result-header fade-in">
+      <div class="topic-pill">{{ interviewData.topic | titlecase }} Interview Session</div>
+      <h1>HireReady Evaluation Report</h1>
+      <p class="subtitle">AI-generated performance analysis</p>
+    </header>
+
+    <div class="grid-layout">
+      <!-- Left Column: Final Score -->
+      <div class="left-col">
+        <section class="score-section glass-card fade-in">
+          <div class="score-circle">
+            <svg viewBox="0 0 100 100">
+              <circle class="bg" cx="50" cy="50" r="45"></circle>
+              <circle class="progress" cx="50" cy="50" r="45" 
+                      [style.stroke]="getScoreColor()"
+                      [style.stroke-dashoffset]="getScoreDashoffset()"></circle>
+            </svg>
+            <div class="score-text">
+              <span class="numerator">{{ interviewData.score }}</span>
+              <span class="denominator">/10</span>
+            </div>
+          </div>
+          <h2 class="score-label" [style.color]="getScoreColor()">
+            {{ interviewData.score >= 8 ? 'Exceptional' : (interviewData.score >= 5 ? 'Strong Potential' : 'Needs Development') }}
+          </h2>
+        </section>
+
+        <!-- Stats Section -->
+        <section class="info-section glass-card fade-in">
+          <div class="info-item">
+            <span class="label">Mode</span>
+            <span class="value">{{ interviewData.mode | titlecase }}</span>
+          </div>
+          <div class="info-item">
+            <span class="label">Rounds</span>
+            <span class="value">{{ interviewData.chatHistory?.length || interviewData.questions?.length }}</span>
+          </div>
+        </section>
+      </div>
+
+      <!-- Right Column: Detailed Metrics -->
+      <div class="right-col">
+        <section class="metrics-section glass-card fade-in">
+          <h3>Skill Assessment</h3>
+          <div class="metrics-grid">
+            <div class="metric-item" *ngFor="let metric of [
+              {name: 'Technical Depth', key: 'technical'},
+              {name: 'Communication', key: 'communication'},
+              {name: 'Problem Solving', key: 'problemSolving'},
+              {name: 'Confidence', key: 'confidence'}
+            ]">
+              <div class="metric-info">
+                <span class="metric-name">{{ metric.name }}</span>
+                <span class="metric-value">{{ interviewData.metrics?.[metric.key] || 0 }}/10</span>
+              </div>
+              <div class="progress-bar-bg">
+                <div class="progress-bar-fill" 
+                     [ngClass]="getMetricClass(interviewData.metrics?.[metric.key] || 0)"
+                     [style.width]="getMetricWidth(interviewData.metrics?.[metric.key] || 0)"></div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="feedback-section glass-card fade-in">
+          <h3>Executive Summary</h3>
+          <p class="feedback-text">{{ interviewData.feedback }}</p>
+        </section>
+      </div>
+
+      <!-- Strengths & Growth Areas -->
+      <div class="bottom-grid">
+        <section class="growth-card glass-card fade-in strengths">
+          <div class="card-header">
+            <span class="icon">🚀</span>
+            <h3>Key Strengths</h3>
+          </div>
+          <ul>
+            <li *ngFor="let s of interviewData.strengths">{{ s }}</li>
+            <li *ngIf="!interviewData.strengths?.length">Good overall technical foundation.</li>
+          </ul>
+        </section>
+
+        <section class="growth-card glass-card fade-in improvements">
+          <div class="card-header">
+            <span class="icon">🎯</span>
+            <h3>Actionable Steps</h3>
+          </div>
+          <ul>
+            <li *ngFor="let r of interviewData.recommendations">{{ r }}</li>
+            <li *ngIf="!interviewData.recommendations?.length">Practice modular coding patterns.</li>
+          </ul>
+        </section>
+      </div>
+
+      <!-- Action Footer -->
+      <footer class="action-footer fade-in">
+        <button class="btn-secondary" routerLink="/topic-select">Retake Interview</button>
+        <button class="btn-primary ripple" routerLink="/welcome">Exit Session</button>
+      </footer>
+    </div>
+  </div>
+</div>
